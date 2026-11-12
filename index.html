@@ -4,66 +4,37 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090914">
-  <meta name="description" content="سينما عربية — شاهد أفلامًا عربية من قنواتها الرسمية على YouTube.">
-  <title>ليلتك | سينما عربية</title>
+  <meta name="description" content="ليلتك — اكتشف المسلسلات والأفلام وتابعها من مصادرها الرسمية.">
+  <title>ليلتك | Stranger Things</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#home" aria-label="ليلتك - الرئيسية"><span class="brand-icon">▶</span> ليلتك</a>
-    <nav class="nav-links" aria-label="التنقل"><a href="#home">الرئيسية</a><a href="#browse">تصفّح الأفلام</a><a href="#watch">المشغّل</a></nav>
-    <a class="official-link" href="https://www.youtube.com/@RotanaCinema_KSA" target="_blank" rel="noopener noreferrer">قنوات رسمية <span>↗</span></a>
+    <a class="brand" href="#home"><span class="brand-icon">▶</span> ليلتك</a>
+    <nav class="nav-links" aria-label="التنقل"><a href="#home">الرئيسية</a><a href="#details">التفاصيل</a></nav>
+    <a class="official-link" href="https://www.netflix.com/title/80057281" target="_blank" rel="noopener noreferrer">المصدر الرسمي ↗</a>
   </header>
-
   <main id="home">
     <section class="hero wrap">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="live-dot"></span> سينما عربية من مصادرها الرسمية</div>
-        <h1>ليلتك لها <span class="gradient">فيلم.</span></h1>
-        <p>اختَر مجموعة أفلام من قنوات عربية رسمية وشاهدها عبر مشغّل YouTube المضمّن. التوفّر قد يختلف حسب البلد.</p>
-        <a class="button button-primary" href="#browse">اكتشف الأفلام <span>↓</span></a>
+        <div class="eyebrow"><span class="live-dot"></span> مسلسل مختار</div>
+        <h1>Stranger <span class="gradient">Things</span></h1>
+        <p class="arabic-title">أشياء غريبة</p>
+        <p class="description">في بلدة هوكينز، يختفي طفل في ظروف غامضة، فتبدأ عائلته وأصدقاؤه رحلة تكشف أسرارًا وقوى غير مألوفة.</p>
+        <div class="meta"><span>مسلسل</span><i></i><span>2016</span><i></i><span class="age">TV-14</span><i></i><span>خيال علمي · غموض</span></div>
+        <a class="button button-primary" href="https://www.netflix.com/title/80057281" target="_blank" rel="noopener noreferrer">شاهده على Netflix <span>↗</span></a>
+        <p class="availability">التصنيف والتوفّر قد يختلفان حسب البلد. يلزم اشتراك Netflix للمشاهدة.</p>
       </div>
-      <div class="hero-art" aria-hidden="true"><div class="art-glow"></div><div class="film-card film-card-back">▶</div><div class="film-card film-card-front"><span>ليلة سينما</span><b>مشاهدة ممتعة</b><i>✦</i></div><div class="art-spark">✦</div></div>
+      <div class="hero-art" role="img" aria-label="تصميم فني تجريدي مستوحى من أجواء الغموض والخيال العلمي"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="lightning">ϟ</div><div class="art-label">HAWKINS<br><span>INDIANA</span></div><div class="art-bottom">A STORY FROM THE OTHER SIDE</div></div>
     </section>
-
-    <section class="section wrap" id="browse">
-      <div class="section-heading"><div><div class="eyebrow">اختياراتنا</div><h2>أفلام عربية</h2><p>مجموعات منشورة على قنوات أصحاب المحتوى الرسمية.</p></div><label class="search-box"><span>⌕</span><input id="movie-search" type="search" placeholder="ابحث عن قناة أو مجموعة" aria-label="ابحث عن قناة أو مجموعة"></label></div>
-      <div class="filter-row" role="group" aria-label="تصفية المجموعات"><button class="filter active" data-filter="all" type="button">الكل</button><button class="filter" data-filter="rotana" type="button">روتانا</button><button class="filter" data-filter="classics" type="button">كلاسيكيات</button></div>
-      <div class="movie-grid" id="movie-grid">
-        <article class="movie-card" data-category="rotana" data-search="روتانا سينما أفلام كاملة مصرية عربية">
-          <button class="poster poster-one" type="button" data-playlist="PLp_L_JvMlpE3zTLnIJ2nZY-Gtpt8i4b9h" data-title="أفلام كاملة — روتانا سينما">
-            <span class="poster-tag">قناة رسمية</span><span class="poster-symbol">▶</span><span class="poster-copy"><small>روتانا سينما</small><strong>أفلام كاملة</strong></span>
-          </button>
-          <div class="card-info"><div><h3>أفلام كاملة</h3><p>من قناة Rotana Cinema KSA</p></div><span class="card-arrow">↙</span></div>
-        </article>
-        <article class="movie-card" data-category="rotana" data-search="روتانا ستوديوز أفلام عربية كاملة">
-          <button class="poster poster-two" type="button" data-playlist="PLWB5Ljrn6pk9QWg50V-qapfsV8p2yNtKp" data-title="أفلام كاملة — روتانا ستوديوز">
-            <span class="poster-tag">قناة رسمية</span><span class="poster-symbol">▶</span><span class="poster-copy"><small>روتانا ستوديوز</small><strong>حكايات عربية</strong></span>
-          </button>
-          <div class="card-info"><div><h3>أفلام من روتانا ستوديوز</h3><p>مجموعة أفلام على القناة الرسمية</p></div><span class="card-arrow">↙</span></div>
-        </article>
-        <article class="movie-card" data-category="classics" data-search="أفلام كلاسيكية عربية أفلام يوتيوب aflam arabic">
-          <a class="poster poster-three" href="https://www.youtube.com/@Aflam" target="_blank" rel="noopener noreferrer">
-            <span class="poster-tag">افتح القناة</span><span class="poster-symbol">↗</span><span class="poster-copy"><small>Aflam Arabic</small><strong>كلاسيكيات عربية</strong></span>
-          </a>
-          <div class="card-info"><div><h3>كلاسيكيات عربية</h3><p>تصفّح قناة Aflam على YouTube</p></div><span class="card-arrow">↙</span></div>
-        </article>
-      </div>
-      <p class="source-note">نحن لا نستضيف أو ننسخ الأفلام؛ التشغيل يتم من صفحات YouTube الرسمية، وقد تتغير الإتاحة أو تختلف حسب المنطقة.</p>
-    </section>
-
-    <section class="section player-section" id="watch">
-      <div class="wrap">
-        <div class="section-heading player-heading"><div><div class="eyebrow">مشاهدة داخل الموقع</div><h2 id="player-title">اختر مجموعة أفلام للبدء</h2><p>استخدم أزرار YouTube داخل المشغّل للتشغيل والتنقل بين الأفلام.</p></div><a id="open-youtube" class="text-link" href="https://www.youtube.com/@RotanaCinema_KSA" target="_blank" rel="noopener noreferrer">افتح المصدر ↗</a></div>
-        <div class="player-frame"><div class="player-placeholder" id="player-placeholder"><span class="big-play">▶</span><p>اختر مجموعة من الأعلى وستظهر هنا</p></div><iframe id="movie-player" title="مشغل أفلام عربية من YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen hidden></iframe></div>
-        <p class="player-caption">المشغّل تابع لـ YouTube. إذا كان الفيديو غير متاح، افتح القناة الرسمية لمشاهدة ما هو متوفر في منطقتك.</p>
-      </div>
+    <section class="section wrap" id="details">
+      <div class="section-heading"><div><div class="eyebrow">صفحة المسلسل</div><h2>عن Stranger Things</h2></div></div>
+      <div class="details-card"><div><span class="detail-label">سنة الإنتاج</span><strong>2016</strong></div><div><span class="detail-label">التصنيف العمري</span><strong>TV-14 <small>قد يختلف حسب المنطقة</small></strong></div><div><span class="detail-label">النوع</span><strong>خيال علمي، غموض، دراما</strong></div><p>هذه الصفحة تعريفية فقط ولا تستضيف أو تنزّل حلقات المسلسل. استخدم الرابط الرسمي أعلاه للتوفر والمشاهدة.</p></div>
     </section>
   </main>
-  <footer class="footer"><a class="brand" href="#home"><span class="brand-icon">▶</span> ليلتك</a><p>واجهة عربية لاكتشاف أفلام منشورة على مصادر رسمية.</p><a href="#browse">تصفّح المجموعات ↑</a></footer>
+  <footer class="footer"><a class="brand" href="#home"><span class="brand-icon">▶</span> ليلتك</a><p>صفحة تعريفية — المشاهدة عبر المصدر الرسمي.</p><a href="https://www.netflix.com/title/80057281" target="_blank" rel="noopener noreferrer">Netflix ↗</a></footer>
 </body>
 </html>
