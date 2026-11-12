@@ -8,8 +8,11 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove('visible'), 6000);
 }
 
+// Hide the demo page until Supabase confirms an authenticated session.
 document.body.classList.add('auth-pending');
-document.querySelectorAll('.topbar, body > main, body > footer').forEach((el) => { el.hidden = true; });
+document.querySelectorAll('.topbar, body > main, body > footer').forEach((element) => {
+  element.hidden = true;
+});
 
 const gate = document.createElement('main');
 gate.id = 'auth-gate';
@@ -49,17 +52,11 @@ workspace.innerHTML = `
   </section>`;
 document.body.append(workspace);
 
-// The requested track is loaded only after a valid Supabase session exists.
-// Autoplay with sound can still be blocked by browser policy; the player controls
-// remain available in that case.
 const music = document.createElement('aside');
 music.className = 'music-player';
 music.hidden = true;
 music.setAttribute('aria-label', 'مشغل الموسيقى');
-music.innerHTML = `
-  <div class="music-player-label">الأغنية</div>
-  <iframe title="مشغل الأغنية" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-  <small>إذا لم يبدأ التشغيل تلقائيًا، اضغط تشغيل.</small>`;
+music.innerHTML = `<div class="music-player-label">الأغنية</div><iframe title="مشغل الأغنية" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><small>إذا لم يبدأ تلقائيًا، اضغط تشغيل.</small>`;
 document.body.append(music);
 let musicStarted = false;
 function startMusicAfterLogin() {
@@ -74,8 +71,7 @@ const emailInput = gate.querySelector('#login-email');
 const submit = gate.querySelector('#login-submit');
 const status = gate.querySelector('#login-status');
 let supabaseClient;
-
-function showLogin(message = '') {
+function showLogin(message) {
   workspace.hidden = true;
   gate.hidden = false;
   music.hidden = true;
@@ -83,9 +79,11 @@ function showLogin(message = '') {
   document.body.classList.remove('auth-pending');
   if (message) status.textContent = message;
 }
-
 function showWorkspace(session) {
-  if (!session?.user) return showLogin();
+  if (!session || !session.user) {
+    showLogin();
+    return;
+  }
   gate.hidden = true;
   workspace.hidden = false;
   document.body.classList.add('auth-ready');
@@ -106,16 +104,18 @@ form.addEventListener('submit', async (event) => {
   submit.textContent = 'جارٍ إرسال الرابط…';
   status.textContent = '';
   try {
-    const redirectTo = window.location.origin + window.location.pathname;
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: emailInput.value.trim(),
-      options: { shouldCreateUser: true, emailRedirectTo: redirectTo }
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: 'https://sahnk3511-max.github.io/aurahost-public/'
+      }
     });
     if (error) throw error;
     status.textContent = 'أرسلنا رابط الدخول إلى بريدك. افتحه للانتقال إلى لوحة التحكم، وتحقق من Spam/Junk إذا لم تجده.';
   } catch (error) {
-    console.error('Email sign-in failed:', error);
-    status.textContent = 'تعذر إرسال الرابط. تحقق من البريد وإعداد Redirect URLs في Supabase.';
+    console.error('Supabase sign-in error:', error);
+    status.textContent = `خطأ Supabase (${error.code || error.name || 'غير معروف'}): ${error.message || 'تعذر إرسال الرابط'}`;
   } finally {
     submit.disabled = false;
     submit.textContent = 'أرسل رابط الدخول';
@@ -125,10 +125,10 @@ form.addEventListener('submit', async (event) => {
 workspace.querySelector('#logout-button').addEventListener('click', async () => {
   if (!supabaseClient) return;
   const { error } = await supabaseClient.auth.signOut();
-  if (error) showToast('تعذر تسجيل الخروج. حاول مرة أخرى.');
+  if (error) showToast(`تعذر تسجيل الخروج: ${error.message || 'حاول مرة أخرى.'}`);
 });
 workspace.querySelector('#add-project-button').addEventListener('click', () => {
-  showToast('إضافة وتشغيل البوتات تحتاج إعداد الخادم الخلفي؛ لم يتم تفعيلها في الموقع بعد.');
+  showToast('إضافة وتشغيل البوتات تحتاج إعداد خادم خلفي؛ لم يتم تفعيلها بعد.');
 });
 
 function loadScript(src) {
@@ -137,7 +137,7 @@ function loadScript(src) {
     script.src = src;
     script.async = true;
     script.onload = resolve;
-    script.onerror = reject;
+    script.onerror = () => reject(new Error(`تعذر تحميل ${src}`));
     document.head.append(script);
   });
 }
@@ -152,18 +152,20 @@ function loadScript(src) {
       return;
     }
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-    if (!window.supabase?.createClient) throw new Error('Supabase library unavailable');
+    if (!window.supabase || !window.supabase.createClient) {
+      throw new Error('لم يتم تحميل مكتبة Supabase');
+    }
     supabaseClient = window.supabase.createClient(config.url, config.anonKey);
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    const { data, error } = await supabaseClient.auth.getSession();
     if (error) throw error;
-    if (session) showWorkspace(session);
+    if (data.session) showWorkspace(data.session);
     else showLogin();
-    supabaseClient.auth.onAuthStateChange((_event, nextSession) => {
-      if (nextSession) showWorkspace(nextSession);
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (session) showWorkspace(session);
       else showLogin();
     });
   } catch (error) {
-    console.error('Supabase initialization failed:', error);
-    showLogin('تعذر تحميل تسجيل الدخول. تحقق من الاتصال وإعداد Supabase.');
+    console.error('Supabase initialization error:', error);
+    showLogin(`تعذر تحميل تسجيل الدخول: ${error.message || 'تحقق من الاتصال وإعداد Supabase.'}`);
   }
 })();
