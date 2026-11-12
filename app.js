@@ -47,7 +47,6 @@ const passwordInput = gate.querySelector('#login-password');
 const submit = gate.querySelector('#login-submit');
 const status = gate.querySelector('#login-status');
 const switchModeButton = gate.querySelector('#switch-mode');
-// Make feedback visible even if the site's stylesheet hides empty status paragraphs.
 Object.assign(status.style, { display: 'block', minHeight: '1.7em', marginTop: '14px', color: '#f4f3fc' });
 let isExistingAccountLogin = false;
 let supabaseClient;
@@ -74,7 +73,7 @@ function showLogin(message = '') {
   status.textContent = message;
 }
 function showWorkspace(session) {
-  if (!session?.user) return showLogin('لم يتم إنشاء جلسة دخول. جرّب تسجيل الدخول بالبريد وكلمة المرور.');
+  if (!session?.user) return showLogin('لم يتم إنشاء جلسة دخول. جرّب تسجيل الدخول مجددًا.');
   gate.hidden = true;
   workspace.hidden = false;
   document.body.classList.add('auth-ready');
@@ -82,6 +81,15 @@ function showWorkspace(session) {
   const email = session.user.email || '';
   workspace.querySelector('#account-email').textContent = email;
   workspace.querySelector('#account-name').textContent = email ? `، ${email}` : '';
+}
+
+// Avoid leaving the form stuck in a loading state if the browser cannot reach Supabase.
+function withTimeout(promise, milliseconds = 15000) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('انتهت مهلة الاتصال بـ Supabase. تحقق من الإنترنت وإعدادات المشروع ثم أعد المحاولة.')), milliseconds);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
 form.addEventListener('submit', async (event) => {
@@ -97,18 +105,18 @@ form.addEventListener('submit', async (event) => {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     if (isExistingAccountLogin) {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      const { data, error } = await withTimeout(supabaseClient.auth.signInWithPassword({ email, password }));
       if (error) throw error;
       if (data.session) showWorkspace(data.session);
       else status.textContent = 'تمت المصادقة لكن لم تُنشأ جلسة. تحقق من إعدادات Supabase.';
     } else {
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      const { data, error } = await withTimeout(supabaseClient.auth.signUp({ email, password }));
       if (error) throw error;
       if (data.session) {
         showWorkspace(data.session);
       } else {
         setMode(true);
-        status.textContent = 'الحساب موجود الآن. سجّل الدخول بنفس البريد وكلمة المرور. إذا ظهر خطأ تأكيد البريد، عطّل Confirm email في Supabase.';
+        status.textContent = 'الحساب أُنشئ. سجّل الدخول بالبريد وكلمة المرور. إذا ظهر خطأ تأكيد البريد، عطّل Confirm email في Supabase.';
       }
     }
   } catch (error) {
@@ -147,7 +155,7 @@ function loadScript(src) {
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
     if (!window.supabase?.createClient) throw new Error('لم يتم تحميل مكتبة Supabase');
     supabaseClient = window.supabase.createClient(config.url, config.anonKey);
-    const { data, error } = await supabaseClient.auth.getSession();
+    const { data, error } = await withTimeout(supabaseClient.auth.getSession());
     if (error) throw error;
     if (data.session) showWorkspace(data.session);
     else showLogin();
