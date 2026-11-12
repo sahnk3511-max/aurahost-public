@@ -8,8 +8,6 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove('visible'), 6000);
 }
 
-// Keep the existing public/demo page hidden. Visitors see sign-in first;
-// authenticated users get a simple account dashboard.
 document.body.classList.add('auth-pending');
 document.querySelectorAll('.topbar, body > main, body > footer').forEach((el) => { el.hidden = true; });
 
@@ -51,17 +49,25 @@ workspace.innerHTML = `
   </section>`;
 document.body.append(workspace);
 
-// Persistent YouTube player: it stays mounted while switching between sign-in
-// and the dashboard. Browsers may block autoplay with sound until the visitor
-// interacts with the player, so its standard playback controls remain visible.
+// The requested track is loaded only after a valid Supabase session exists.
+// Autoplay with sound can still be blocked by browser policy; the player controls
+// remain available in that case.
 const music = document.createElement('aside');
 music.className = 'music-player';
+music.hidden = true;
 music.setAttribute('aria-label', 'مشغل الموسيقى');
 music.innerHTML = `
   <div class="music-player-label">الأغنية</div>
-  <iframe title="مشغل الأغنية" src="https://www.youtube-nocookie.com/embed/mCZkPHKSnK8?autoplay=1&playsinline=1&controls=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  <iframe title="مشغل الأغنية" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   <small>إذا لم يبدأ التشغيل تلقائيًا، اضغط تشغيل.</small>`;
 document.body.append(music);
+let musicStarted = false;
+function startMusicAfterLogin() {
+  music.hidden = false;
+  if (musicStarted) return;
+  musicStarted = true;
+  music.querySelector('iframe').src = 'https://www.youtube-nocookie.com/embed/mCZkPHKSnK8?autoplay=1&playsinline=1&controls=1&rel=0';
+}
 
 const form = gate.querySelector('#login-form');
 const emailInput = gate.querySelector('#login-email');
@@ -72,6 +78,7 @@ let supabaseClient;
 function showLogin(message = '') {
   workspace.hidden = true;
   gate.hidden = false;
+  music.hidden = true;
   document.body.classList.add('auth-ready');
   document.body.classList.remove('auth-pending');
   if (message) status.textContent = message;
@@ -86,6 +93,7 @@ function showWorkspace(session) {
   const email = session.user.email || '';
   workspace.querySelector('#account-email').textContent = email;
   workspace.querySelector('#account-name').textContent = email ? `، ${email}` : '';
+  startMusicAfterLogin();
 }
 
 form.addEventListener('submit', async (event) => {
