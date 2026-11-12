@@ -21,14 +21,15 @@ gate.innerHTML = `
   <section class="auth-card" aria-labelledby="login-title">
     <a class="brand auth-brand" href="#">✦ Aura<span>host</span></a>
     <div class="eyebrow"><span class="pulse"></span> مساحة مشاريعك</div>
-    <h1 id="login-title">مرحبًا بك</h1>
-    <p class="auth-description">سجّل الدخول أو أنشئ حسابًا برابط آمن يُرسل إلى بريدك الإلكتروني.</p>
+    <h1 id="login-title">إنشاء حساب</h1>
+    <p id="auth-description" class="auth-description">أدخل بريدك الإلكتروني وسنرسل لك رابطًا آمنًا لإنشاء حسابك.</p>
     <form id="login-form">
       <label for="login-email">البريد الإلكتروني</label>
       <input id="login-email" type="email" autocomplete="email" required placeholder="name@example.com" dir="ltr">
-      <button id="login-submit" class="button button-primary" type="submit">أرسل رابط الدخول</button>
+      <button id="login-submit" class="button button-primary" type="submit">إنشاء حساب بالرابط</button>
     </form>
-    <p id="login-status" class="auth-status" role="status" aria-live="polite">لن تحتاج إلى كلمة مرور.</p>
+    <p class="auth-switch"><span id="switch-prompt">لديك حساب؟</span> <button id="switch-mode" type="button">تسجيل الدخول</button></p>
+    <p id="login-status" class="auth-status" role="status" aria-live="polite">سنرسل رابط الدخول إلى بريدك.</p>
   </section>`;
 document.body.prepend(gate);
 
@@ -70,7 +71,22 @@ const form = gate.querySelector('#login-form');
 const emailInput = gate.querySelector('#login-email');
 const submit = gate.querySelector('#login-submit');
 const status = gate.querySelector('#login-status');
+const switchModeButton = gate.querySelector('#switch-mode');
+let isExistingAccountLogin = false;
 let supabaseClient;
+
+switchModeButton.addEventListener('click', () => {
+  isExistingAccountLogin = !isExistingAccountLogin;
+  gate.querySelector('#login-title').textContent = isExistingAccountLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
+  gate.querySelector('#auth-description').textContent = isExistingAccountLogin
+    ? 'أدخل البريد المرتبط بحسابك وسنرسل لك رابط دخول آمن.'
+    : 'أدخل بريدك الإلكتروني وسنرسل لك رابطًا آمنًا لإنشاء حسابك.';
+  gate.querySelector('#switch-prompt').textContent = isExistingAccountLogin ? 'ليس لديك حساب؟' : 'لديك حساب؟';
+  switchModeButton.textContent = isExistingAccountLogin ? 'إنشاء حساب' : 'تسجيل الدخول';
+  submit.textContent = isExistingAccountLogin ? 'إرسال رابط الدخول' : 'إنشاء حساب بالرابط';
+  status.textContent = isExistingAccountLogin ? 'استخدم البريد الإلكتروني الذي سجلت به سابقًا.' : 'سنرسل رابط الدخول إلى بريدك.';
+});
+
 function showLogin(message) {
   workspace.hidden = true;
   gate.hidden = false;
@@ -107,18 +123,18 @@ form.addEventListener('submit', async (event) => {
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: emailInput.value.trim(),
       options: {
-        shouldCreateUser: true,
+        shouldCreateUser: !isExistingAccountLogin,
         emailRedirectTo: 'https://sahnk3511-max.github.io/aurahost-public/'
       }
     });
     if (error) throw error;
-    status.textContent = 'أرسلنا رابط الدخول إلى بريدك. افتحه للانتقال إلى لوحة التحكم، وتحقق من Spam/Junk إذا لم تجده.';
+    status.textContent = 'أرسلنا رابطًا إلى بريدك. افتحه لإكمال العملية، وتحقق من Spam/Junk إذا لم تجده.';
   } catch (error) {
     console.error('Supabase sign-in error:', error);
     status.textContent = `خطأ Supabase (${error.code || error.name || 'غير معروف'}): ${error.message || 'تعذر إرسال الرابط'}`;
   } finally {
     submit.disabled = false;
-    submit.textContent = 'أرسل رابط الدخول';
+    submit.textContent = isExistingAccountLogin ? 'إرسال رابط الدخول' : 'إنشاء حساب بالرابط';
   }
 });
 
