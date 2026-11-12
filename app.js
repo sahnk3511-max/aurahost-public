@@ -13,24 +13,25 @@ document.querySelectorAll('.topbar, body > main, body > footer').forEach((elemen
   element.hidden = true;
 });
 
+// Keep the signed-out page focused on the login form, with only a small
+// account-creation link beneath it.
 const gate = document.createElement('main');
 gate.id = 'auth-gate';
 gate.className = 'auth-screen';
 gate.innerHTML = `
   <section class="auth-card" aria-labelledby="login-title">
     <a class="brand auth-brand" href="#">✦ Aura<span>host</span></a>
-    <div class="eyebrow"><span class="pulse"></span> مساحة مشاريعك</div>
-    <h1 id="login-title">إنشاء حساب</h1>
-    <p id="auth-description" class="auth-description">أنشئ حسابك باستخدام بريدك الإلكتروني وكلمة مرور.</p>
+    <h1 id="login-title">تسجيل الدخول</h1>
+    <p id="auth-description" class="auth-description">أدخل بريدك الإلكتروني وكلمة المرور للدخول إلى حسابك.</p>
     <form id="login-form">
       <label for="login-email">البريد الإلكتروني</label>
       <input id="login-email" type="email" autocomplete="email" required placeholder="name@example.com" dir="ltr">
       <label for="login-password">كلمة المرور</label>
-      <input id="login-password" type="password" autocomplete="new-password" minlength="8" required placeholder="8 أحرف على الأقل" dir="ltr">
-      <button id="login-submit" class="button button-primary" type="submit">إنشاء حساب</button>
+      <input id="login-password" type="password" autocomplete="current-password" minlength="8" required placeholder="كلمة المرور" dir="ltr">
+      <button id="login-submit" class="button button-primary" type="submit">تسجيل الدخول</button>
     </form>
-    <p class="auth-switch"><span id="switch-prompt">لديك حساب؟</span> <button id="switch-mode" type="button">تسجيل الدخول</button></p>
-    <p id="login-status" class="auth-status" role="status" aria-live="polite">استخدم كلمة مرور لا تستعملها في مواقع أخرى.</p>
+    <p class="auth-switch"><span id="switch-prompt">ليس لديك حساب؟</span> <button id="switch-mode" type="button">إنشاء حساب</button></p>
+    <p id="login-status" class="auth-status" role="status" aria-live="polite"></p>
   </section>`;
 document.body.prepend(gate);
 
@@ -74,7 +75,7 @@ const passwordInput = gate.querySelector('#login-password');
 const submit = gate.querySelector('#login-submit');
 const status = gate.querySelector('#login-status');
 const switchModeButton = gate.querySelector('#switch-mode');
-let isExistingAccountLogin = false;
+let isExistingAccountLogin = true;
 let supabaseClient;
 
 switchModeButton.addEventListener('click', () => {
@@ -87,9 +88,7 @@ switchModeButton.addEventListener('click', () => {
   switchModeButton.textContent = isExistingAccountLogin ? 'إنشاء حساب' : 'تسجيل الدخول';
   submit.textContent = isExistingAccountLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
   passwordInput.autocomplete = isExistingAccountLogin ? 'current-password' : 'new-password';
-  status.textContent = isExistingAccountLogin
-    ? 'لن يتم إرسال رابط عند تسجيل الدخول بكلمة المرور.'
-    : 'استخدم كلمة مرور لا تستعملها في مواقع أخرى.';
+  status.textContent = isExistingAccountLogin ? '' : 'قد يطلب Supabase تأكيد البريد عند إنشاء الحساب.';
 });
 
 function showLogin(message) {
@@ -138,16 +137,12 @@ form.addEventListener('submit', async (event) => {
         options: { emailRedirectTo: 'https://sahnk3511-max.github.io/aurahost-public/' }
       });
       if (error) throw error;
-      if (data.session) {
-        showWorkspace(data.session);
-      } else {
-        status.textContent = 'تم إنشاء الحساب. إذا كان تأكيد البريد مفعّلًا في Supabase، افتح رسالة التأكيد مرة واحدة لإكمال التسجيل.';
-      }
+      if (data.session) showWorkspace(data.session);
+      else status.textContent = 'تم إنشاء الحساب. إذا كان تأكيد البريد مفعّلًا في Supabase، افتح رسالة التأكيد مرة واحدة.';
     }
   } catch (error) {
     console.error('Supabase authentication error:', error);
-    const message = error.message || 'تعذرت المصادقة.';
-    status.textContent = `تعذر ${isExistingAccountLogin ? 'تسجيل الدخول' : 'إنشاء الحساب'}: ${message}`;
+    status.textContent = `تعذر ${isExistingAccountLogin ? 'تسجيل الدخول' : 'إنشاء الحساب'}: ${error.message || 'خطأ غير معروف'}`;
   } finally {
     submit.disabled = false;
     submit.textContent = isExistingAccountLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
@@ -184,9 +179,7 @@ function loadScript(src) {
       return;
     }
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-    if (!window.supabase || !window.supabase.createClient) {
-      throw new Error('لم يتم تحميل مكتبة Supabase');
-    }
+    if (!window.supabase || !window.supabase.createClient) throw new Error('لم يتم تحميل مكتبة Supabase');
     supabaseClient = window.supabase.createClient(config.url, config.anonKey);
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) throw error;
