@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" role="img" aria-labelledby="title desc">
+  <title id="title">Y2</title>
+  <desc id="desc">لوحة عريضة بتصميم نيون داكن وحروف Y2 كبيرة</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17152c"/><stop offset=".52" stop-color="#25204a"/><stop offset="1" stop-color="#10121e"/></linearGradient>
+    <linearGradient id="letters" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff5ff"/><stop offset=".48" stop-color="#c6a5ff"/><stop offset="1" stop-color="#ff79c6"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#a56cff" stop-opacity=".48"/><stop offset="1" stop-color="#a56cff" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-.5" y="-.5" width="2" height="2"><feGaussianBlur stdDeviation="17"/></filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#fff" stroke-opacity=".055"/></pattern>
+  </defs>
+  <rect width="1600" height="700" fill="url(#bg)"/>
+  <rect width="1600" height="700" fill="url(#grid)"/>
+  <ellipse cx="800" cy="360" rx="560" ry="360" fill="url(#glow)"/>
+  <circle cx="265" cy="165" r="3" fill="#fff" opacity=".8"/><circle cx="1320" cy="505" r="4" fill="#e2c7ff" opacity=".9"/><circle cx="1190" cy="135" r="2" fill="#fff" opacity=".7"/><circle cx="410" cy="560" r="3" fill="#ff91d0" opacity=".8"/>
+  <text x="800" y="435" text-anchor="middle" font-family="Arial,sans-serif" font-size="330" font-weight="800" letter-spacing="-12" fill="#b565ff" opacity=".42" filter="url(#shadow)">Y2</text>
+  <text x="800" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-size="330" font-weight="800" letter-spacing="-12" fill="url(#letters)" stroke="#fff" stroke-opacity=".28" stroke-width="2">Y2</text>
+  <path d="M90 90h95M90 90v95M1510 610h-95m95 0v-95" fill="none" stroke="#d5b7ff" stroke-opacity=".7" stroke-width="3"/>
+  <rect x="1.5" y="1.5" width="1597" height="697" rx="30" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="3"/>
+</svg>
